@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f8ff">
+  <meta name="description" content="Kalkulator subnet IPv4 dan pembagian VLSM untuk pembelajaran jaringan komputer.">
+  <title>SubnetEDU — IPv4 Networking Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="SubnetEDU beranda">
+      <span class="brand-mark"><span></span><span></span><span></span><span></span></span>
+      <span>Subnet<span class="brand-light">EDU</span></span>
+    </a>
+    <div class="top-meta"><span class="live-dot"></span> NETWORKING LAB <span class="meta-divider">/</span> IPv4 & VLSM</div>
+    <a class="docs-link" href="/docs" target="_blank" rel="noreferrer">API Docs <span>↗</span></a>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow"><span class="eyebrow-line"></span> INTERACTIVE LEARNING TOOL</div>
+      <h1>Understand your<br><span>network,</span> one bit at a time.</h1>
+      <p class="hero-copy">Hitung subnet IPv4 dan rencanakan pembagian jaringan dengan VLSM. Cepat, akurat, dan mudah dipahami.</p>
+      <div class="hero-tags"><span>IPv4</span><span>SUBNETTING</span><span>VARIABLE LENGTH SUBNET MASK</span></div>
+    </section>
+
+    <section class="workspace">
+      <div class="workspace-head">
+        <div><div class="section-kicker">WORKSPACE <span>01</span></div><h2>Network calculator</h2></div>
+        <div class="status-pill"><span></span> READY TO CALCULATE</div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Mode kalkulator">
+        <button class="tab active" id="tab-subnet" role="tab" aria-selected="true" aria-controls="panel-subnet" data-tab="subnet"><span class="tab-icon">⌘</span> Subnet calculator</button>
+        <button class="tab" id="tab-vlsm" role="tab" aria-selected="false" aria-controls="panel-vlsm" data-tab="vlsm"><span class="tab-icon">▦</span> VLSM allocator <span class="new-tag">ADVANCED</span></button>
+      </div>
+
+      <section class="panel active" id="panel-subnet" role="tabpanel" aria-labelledby="tab-subnet">
+        <div class="panel-intro"><div><h3>Single network analysis</h3><p>Masukkan alamat IPv4 dan prefix untuk melihat detail jaringan.</p></div><span class="step-number">01 / 02</span></div>
+        <form id="subnet-form" class="input-card">
+          <label class="field"><span>IP ADDRESS</span><input id="ip" type="text" value="172.16.5.130" placeholder="192.168.1.10" autocomplete="off" spellcheck="false" required><small>Contoh: 172.16.5.130</small></label>
+          <div class="field-separator">/</div>
+          <label class="field prefix-field"><span>PREFIX LENGTH</span><input id="prefix" type="number" min="0" max="32" value="25" required><small>Rentang 0–32</small></label>
+          <button class="primary-button" type="submit">Calculate <span>→</span></button>
+        </form>
+        <div id="subnet-error" class="error-message" role="alert" hidden></div>
+        <div id="subnet-result" class="result-area" hidden>
+          <div class="result-heading"><div><span class="result-kicker">CALCULATION RESULT</span><h3>Network breakdown</h3></div><span class="success-chip"><span>✓</span> SUCCESS</span></div>
+          <div class="metric-grid">
+            <article class="metric-card metric-highlight"><span class="metric-label">NETWORK ADDRESS</span><strong id="r-network">—</strong><span class="metric-foot">Network identifier</span></article>
+            <article class="metric-card"><span class="metric-label">SUBNET MASK</span><strong id="r-mask">—</strong><span class="metric-foot">Dotted decimal</span></article>
+            <article class="metric-card"><span class="metric-label">BROADCAST ADDRESS</span><strong id="r-broadcast">—</strong><span class="metric-foot">Last address in subnet</span></article>
+            <article class="metric-card"><span class="metric-label">USABLE HOSTS</span><strong id="r-hosts">—</strong><span class="metric-foot">Available host addresses</span></article>
+          </div>
+          <div class="detail-strip">
+            <div><span>FIRST HOST</span><strong id="r-first">—</strong></div>
+            <div><span>LAST HOST</span><strong id="r-last">—</strong></div>
+            <div><span>INPUT CIDR</span><strong id="r-cidr">—</strong></div>
+          </div>
+          <div class="result-note" id="subnet-note">Perhitungan selesai berdasarkan operasi bitwise AND antara IP dan subnet mask.</div>
+        </div>
+        <div class="empty-state" id="subnet-empty"><div class="empty-icon">⌁</div><strong>Your result will appear here</strong><span>Isi alamat IP dan prefix, lalu tekan Calculate.</span></div>
+      </section>
+
+      <section class="panel" id="panel-vlsm" role="tabpanel" aria-labelledby="tab-vlsm" hidden>
+        <div class="panel-intro"><div><h3>Variable Length Subnet Masking</h3><p>Bagikan satu network ke beberapa subnet sesuai kebutuhan host.</p></div><span class="step-number">02 / 02</span></div>
+        <form id="vlsm-form">
+          <label class="field network-field"><span>BASE NETWORK / CIDR</span><input id="vlsm-network" value="192.168.1.0/24" placeholder="192.168.1.0/24" spellcheck="false" required><small>Gunakan alamat network yang valid.</small></label>
+          <div class="requirements-head"><div><span class="field-title">HOST REQUIREMENTS</span><p>Masukkan jumlah host untuk setiap subnet.</p></div><button type="button" class="add-button" id="add-host">＋ Add requirement</button></div>
+          <div id="host-list" class="host-list">
+            <div class="host-row"><span class="host-index">01</span><input type="number" min="1" value="100" aria-label="Kebutuhan host 1"><span class="host-unit">HOSTS</span><button type="button" class="remove-host" aria-label="Hapus kebutuhan">×</button></div>
+            <div class="host-row"><span class="host-index">02</span><input type="number" min="1" value="50" aria-label="Kebutuhan host 2"><span class="host-unit">HOSTS</span><button type="button" class="remove-host" aria-label="Hapus kebutuhan">×</button></div>
+            <div class="host-row"><span class="host-index">03</span><input type="number" min="1" value="20" aria-label="Kebutuhan host 3"><span class="host-unit">HOSTS</span><button type="button" class="remove-host" aria-label="Hapus kebutuhan">×</button></div>
+            <div class="host-row"><span class="host-index">04</span><input type="number" min="1" value="2" aria-label="Kebutuhan host 4"><span class="host-unit">HOSTS</span><button type="button" class="remove-host" aria-label="Hapus kebutuhan">×</button></div>
+          </div>
+          <button class="primary-button vlsm-submit" type="submit">Allocate subnets <span>→</span></button>
+        </form>
+        <div id="vlsm-error" class="error-message" role="alert" hidden></div>
+        <div id="vlsm-result" class="result-area" hidden>
+          <div class="result-heading"><div><span class="result-kicker">ALLOCATION RESULT</span><h3>Subnet allocation plan</h3></div><span class="success-chip"><span>✓</span> SUCCESS</span></div>
+          <div class="table-wrap"><table><thead><tr><th>NO.</th><th>HOST NEED</th><th>NETWORK / CIDR</th><th>HOST RANGE</th><th>USABLE</th></tr></thead><tbody id="vlsm-body"></tbody></table></div>
+          <div class="result-note">Kebutuhan diurutkan dari terbesar ke terkecil. Setiap blok dialokasikan mulai dari alamat network yang sesuai batas blok.</div>
+        </div>
+        <div class="empty-state" id="vlsm-empty"><div class="empty-icon">▦</div><strong>Ready to plan your network?</strong><span>Atur kebutuhan host, lalu tekan Allocate subnets.</span></div>
+      </section>
+    </section>
+
+    <section class="how-section">
+      <div class="how-title"><div class="section-kicker">THE PROCESS <span>02</span></div><h2>From input to insight.</h2></div>
+      <div class="process-grid">
+        <article><span class="process-no">01</span><div class="process-icon">⌗</div><h3>Input network</h3><p>Masukkan alamat IPv4 beserta prefix atau network CIDR.</p></article>
+        <article><span class="process-no">02</span><div class="process-icon">⟡</div><h3>Calculate</h3><p>Sistem menghitung mask, network, broadcast, dan kapasitas host.</p></article>
+        <article><span class="process-no">03</span><div class="process-icon">▤</div><h3>Understand</h3><p>Pelajari hasil perhitungan untuk memahami pembagian jaringan.</p></article>
+      </div>
+    </section>
+    <footer><a class="brand footer-brand" href="/"><span class="brand-mark"><span></span><span></span><span></span><span></span></span><span>Subnet<span class="brand-light">EDU</span></span></a><span>BUILT FOR NETWORKING LEARNERS</span><span>IPv4 LAB <b>•</b> VERSION 1.0</span></footer>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>
